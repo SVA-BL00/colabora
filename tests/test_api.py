@@ -162,23 +162,20 @@ def test_iniciativa_remover_error(client):
 
 def test_buscar_tema_no_input(client):
     response = client.post('api/buscar',
-                           json={'tema': '',
-                                 'key': 'api-key-cambiar'})
+                           data={'tema': ''})
     assert response.status == '200 OK'
     assert b"<td>tema1</td>" in response.data
     assert b"<td>tema3</td>" in response.data
 
 def test_buscar_tema_input(client):
     response = client.post('api/buscar',
-                           json={'tema': '1',
-                                 'key': 'api-key-cambiar'})
+                           data={'tema': '1'})
     assert response.status == '200 OK'
     assert b"<td>tema1</td>" in response.data
 
 def test_buscar_tema_no_resultados(client):
     response = client.post('api/buscar',
-                           json={'tema': 'tema4',
-                                 'key': 'api-key-cambiar'})
+                           data={'tema': 'tema4'})
     assert response.status == '200 OK'
     assert b"<td>tema1</td>" not in response.data
     assert b"<td>tema3</td>" not in response.data

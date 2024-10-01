@@ -4,7 +4,6 @@ from flask import Blueprint
 from flask import request
 from flask import abort
 from flask import current_app
-from flask import render_template_string
 from .db import get_db
 from .db import agrega_iniciativa
 from .db import actualiza_iniciativa
@@ -94,12 +93,9 @@ def iniciativa_remueve():
     return {'result': result}
 
 @bp.route('/buscar', methods=['POST'])
-@key_required
 def buscar_tema():
     db = get_db()
-    json = request.json
-    input_usuario = json['tema']
-    input_usuario = input_usuario.strip().lower()
+    input_usuario = request.form.get('tema', '').strip().lower()
     filas = ''
     if not input_usuario:
         results = temas_creados(db)
@@ -111,4 +107,4 @@ def buscar_tema():
             <td>{result[0]}</td>
         </tr>
         """
-    return render_template_string(filas)
+    return filas
