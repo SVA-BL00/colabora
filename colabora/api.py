@@ -4,11 +4,13 @@ from flask import Blueprint
 from flask import request
 from flask import abort
 from flask import current_app
+from flask import render_template_string
 from .db import get_db
 from .db import agrega_iniciativa
 from .db import actualiza_iniciativa
 from .db import remueve_iniciativa
 from .db import iniciativas
+from .db import temas_creados
 
 
 bp = Blueprint('api', __name__, url_prefix='/api')
@@ -90,3 +92,23 @@ def iniciativa_remueve():
     result = remueve_iniciativa(db, entidad, legislatura,
                                numero)
     return {'result': result}
+
+@bp.route('/buscar', methods=['POST'])
+@key_required
+def buscar_tema():
+    db = get_db()
+    json = request.json
+    input_usuario = json['tema']
+    input_usuario = input_usuario.strip().lower()
+    filas = ''
+    if not input_usuario:
+        results = temas_creados(db)
+    else:
+        results = [tema for tema in temas_creados(db) if input_usuario in tema[0].lower()]
+    for result in results:
+        filas += f"""
+        <tr>
+            <td>{result[0]}</td>
+        </tr>
+        """
+    return render_template_string(filas)
